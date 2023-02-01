@@ -1,10 +1,8 @@
 # Alien vs. Zombie
 
-Please introduce the game here.
+Alien vs zombie is a game where you can play as one side and try to survive by battling the other side. You can use in game mechanics to help your side to victory.
 
-You may add one signature screenshot of your program here or above the title. Check out [this tutorial](https://www.digitalocean.com/community/tutorials/markdown-markdown-images) to learn how to do it.
-
-Please provide the YouTube link to your [Video Demo](https://youtu.be/alUDN-GcdsM).
+[Video Demo](https://youtu.be/alUDN-GcdsM).
 
 ## Compilation Instructions
 
