@@ -25,6 +25,7 @@ No additional features implemented yet for part 1.
 1. 2D gameboard to be displayed.
 2. error messages and error checking
 3. Board rows changes
+4. github website
 
 ### Dzakry Hariz Bin Mohd Sapura
 
