@@ -9,18 +9,41 @@
 #include <limits>
 #include <fstream>
 #include <sstream>
+#include <cmath>
+#include <conio.h> // to detect key presses
+#include <stdlib.h>
 using namespace std;
+
+#define KEY_UP 72
+#define KEY_LEFT 75
+#define KEY_RIGHT 77
+#define KEY_DOWN 80
 
 class BrdAZ
 {
 private:
-    vector<vector<char>> map_;       // convention to put trailing underscore
-    int gmbrd_rows_, gmbrd_columns_; // to indicate private data
+    vector<vector<char>> map_; // convention to put trailing underscore
 
 public:
     BrdAZ(int gmbrd_rows = 3, int gmbrd_columns = 19);
     void init(int gmbrd_rows, int gmbrd_columns);
     void display() const;
+    void play_game();
+    void main_menu();
+    int gmbrd_rows_, gmbrd_columns_, zombie_count;
+    string user_update_settings_yesno;
+    int alien_x_position;
+    int alien_y_position;
+    int zombie_x_position;
+    int zombie_y_position;
+
+    enum movement
+    {
+        RIGHT,
+        LEFT,
+        UP,
+        DOWN
+    };
 };
 
 BrdAZ::BrdAZ(int gmbrd_rows, int gmbrd_columns)
@@ -56,8 +79,15 @@ void BrdAZ::init(int gmbrd_rows, int gmbrd_columns)
 
 void BrdAZ::display() const
 {
-    cout << "           .:Alien vs Zombie:.           " << endl;
+    cout << " " << endl;
+    cout << "\nDefault Game Settings" << endl;
+    cout << "-----------------------" << endl;
+    cout << "Board Rows    : " << gmbrd_rows_ << endl;
+    cout << "Board Columns : " << gmbrd_columns_ << endl;
+    cout << "Zombie Count  : " << zombie_count << endl;
 
+    cout << "           .:Alien vs Zombie:.           " << endl;
+    
     // for each row
     for (int i = 0; i < gmbrd_rows_; ++i)
     {
@@ -75,7 +105,24 @@ void BrdAZ::display() const
         // display grid content and start and end for each column
         for (int j = 0; j < gmbrd_columns_; ++j)
         {
-            cout << "|" << map_[i][j];
+            int random_number_1 = 1 + rand() % gmbrd_columns_;
+            cout << "|";
+            // if (zombies == random_number_1)
+            {
+                // << zombie_count;
+            }
+            if ((j == ceil(gmbrd_columns_ / 2)) && i == ceil(gmbrd_rows_ / 2))
+            {
+                cout << "A";
+                BrdAZ BrdAZobject;
+                BrdAZobject.alien_x_position = j;
+                BrdAZobject.alien_y_position = i;
+                // dont know how to update alien position structure yet
+                // position.rows_position = j;
+                // position.collumns_position = i;
+            }
+            else
+                cout << map_[i][j];
         }
         cout << "|" << endl; // ending column
     }
@@ -109,90 +156,48 @@ void BrdAZ::display() const
          << endl;
 }
 
-void display()
+class Alien
 {
-   BrdAZ brdaz;
-   brdaz.display();
+    public:
+    int attack;
+    int health;
+};
+
+class Zombie
+{
+    public:
+    int attack;
+    int health;
+    int range;
+};
+
+void clear_screen()
+{
+    system("CLS");//clear console
 }
 
-void update_row_change_settings(int& row_count_new)
+void settings_menu(string user_update_settings_yesno, int &gmbrd_rows, int &gmbrd_columns, int &zombie_count)
 {
-    cout << "row input saved";
-}
-
-void update_column_change_settings(int& column_count_new)
-{
-    cout << "column input saved";
-}
-
-void update_zombie_change_settings(int& zombie_count_new)
-{
-    cout << "zombie input saved";
-}
-
-main()
-{
-
-    // define the variables for game settings
-    int gmbrd_rows;
-    int gmbrd_columns;
-    int zombie_count;
-    string user_updated_settings_; 
-
-    
-
-    // DEFAULT GAME SETTINGS
-
-    gmbrd_rows = 3;
-    gmbrd_columns = 19;
-    zombie_count = 1;
-
-    cout << "Default Game Settings" << endl;
-    cout << "-----------------------" << endl;
-    cout << "Board Rows    : " << gmbrd_rows << endl;
-    cout << "Board Columns : " << gmbrd_columns << endl;
-    cout << "Zombie Count  : " << zombie_count << endl;
-    cout << " " << endl;
-    cout << "Do you wish to change the game settings (y/n)? => ";
-
-    cin >> user_updated_settings_; 
-
-
-
-    while (user_updated_settings_ != "y" && user_updated_settings_ != "n") //error check 
-    {
-        cout << " " << endl;
-        cout << "Please use y or n only." << endl; 
-        cout << " " << endl;
-        cout << "Do you want to modify the game settings? (y/n)? => ";
-        cin >> user_updated_settings_; 
-    }
-
-
-
-    if (user_updated_settings_ == "y") 
+    if (user_update_settings_yesno == "y")
     {
         cout << "Board Settings" << endl;
         cout << "----------------" << endl;
         while (true)
         {
-            cout << " " << endl;
-            cout << "test Enter rows => ";
+            cout << "Enter rows => ";
             cin >> gmbrd_rows;
 
-            if (!cin) //error check
+            if (!cin) // error check
             {
-                cout << "Please enter a number that does not contain alphabetical letters or special characters" << endl; 
-                cin.clear();                                        
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
-                continue; 
+                cout << "Please enter a number that does not contain alphabetical letters or special characters" << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
             }
-
-
 
             if (gmbrd_rows < 1)
             {
-                cout << "Please use a postive number " << endl; 
+                cout << "Please use a postive number " << endl;
                 cin.clear();
 
                 continue;
@@ -200,35 +205,32 @@ main()
 
             if (gmbrd_rows % 2 == 0)
             {
-                cout << "You can't use an even number. " << endl; 
+                cout << "You can't use an even number. " << endl;
                 cin.clear();
 
                 continue;
             }
-
             else
-                update_row_change_settings(gmbrd_rows); // pass new board input
                 break;
         }
 
         while (true)
         {
-            cout << " " << endl;
-            cout << "test Enter columns => ";
+            cout << "Enter columns => ";
             cin >> gmbrd_columns;
 
             if (!cin)
             {
-                cout << "Please use numbers only " << endl; 
-                cin.clear();                                        
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+                cout << "Please enter a number that does not contain alphabetical letters or special characters" << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                 continue; // continue the loop
             }
 
-            if (gmbrd_columns < 1)
+            if (gmbrd_columns < 5)
             {
-                cout << "Please enter a number above 0" << endl; 
+                cout << "Please enter a number starting from 5 and above for a playable grid!" << endl;
                 cin.clear();
 
                 continue;
@@ -236,13 +238,12 @@ main()
 
             if (gmbrd_columns % 2 == 0)
             {
-                cout << "Please enter an odd number!" << endl; 
+                cout << "Please enter an odd number!" << endl;
                 cin.clear();
 
                 continue;
             }
             else
-                update_column_change_settings(gmbrd_columns); // pass new column input
                 break;
         }
 
@@ -250,33 +251,29 @@ main()
         {
             while (true)
             {
-                cout << " " << endl;
-                cout << "test Enter number of zombies => ";
-                cin >> zombie_count; 
+                cout << "Enter number of zombies => ";
+                cin >> zombie_count;
 
                 if (!cin)
                 {
                     cout << "Please enter a number that does not contain alphabetical letters or special characters" << endl;
-                    cin.clear();                                         
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
-                    cout << "Enter number of zombies => ";               
-                    continue;                                            
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Enter number of zombies => ";
+                    continue;
                 }
 
-
-
-                if (zombie_count < 1) 
+                if (zombie_count < 1)
                 {
-                    cout << "Please enter a number above 0" << endl; 
+                    cout << "Please enter a number above 0" << endl;
                     cin.clear();
                     cout << "Enter number of zombies => ";
                     continue;
                 }
                 else
-                    update_zombie_change_settings(zombie_count); // pass new zombie input 
+                    
                     break;
             }
-            
             cout << " " << endl;
             cout << "Settings Updated." << endl;
             cout << " " << endl;
@@ -284,21 +281,166 @@ main()
         }
     }
 
-    if (user_updated_settings_ == "n") 
+    if (user_update_settings_yesno == "n")
     {
         cout << "Game continues with default settings. " << endl;
         cout << " " << endl;
     }
 
-    cout << "new settings" << endl;
+    cout << "game settings" << endl;
+    cout << "---------------" << endl;
     cout << "board rows: " << gmbrd_rows << endl;
     cout << "board columns: " << gmbrd_columns << endl;
-    cout << "zombie count: " << zombie_count << endl; 
+    cout << "zombie count: " << zombie_count << endl;
     cout << " ";
+}
 
+void display_stats()
+{
+    Alien alien_object;
+    Zombie zombie_object;
+    cout << "Alien:" << " Health " << alien_object.health << ", Attack " << alien_object.attack << endl;
+    cout << "Zombie:" << " Health " << zombie_object.health << ", Attack " << zombie_object.attack << " Range " << zombie_object.range << endl;
+}
 
-    srand(1); // use this for fixed map during testing
-    // srand(time(NULL)); // try this for random map
+void player_input_direction()
+{
+    while (true)
+    {
+        int key_pressed = getch();
 
-    display();
+        if (key_pressed && key_pressed != 224)
+        {
+            cout << endl
+                 << "Not arrow: " << (char)key_pressed << endl;
+        }
+        else
+        {
+            switch (int arrow_keys = getch())
+            {
+            case KEY_UP /* H */:
+                cout << endl
+                     << "Up" << endl; // key up
+                break;
+            case KEY_DOWN /* K */:
+                cout << endl
+                     << "Down" << endl; // key down
+                // move_alien()
+                break;
+            case KEY_LEFT /* M */:
+                cout << endl
+                     << "Left" << endl; // key left
+                // move_alien()
+                break;
+            case KEY_RIGHT: /* P */
+                cout << endl
+                     << "Right" << endl; // key right
+                // move_alien()
+                break;
+            default:
+                cout << endl
+                     << (char)arrow_keys << endl; // not arrow
+                break;
+            break;
+            }
+        break;
+        }
+    }
+}
+
+// void check_collision();
+
+// void check_win_condition ();
+
+// void BrdAz::play_game();
+    //BrdAZ board;
+    //board.display();
+    //display_stats();
+    //player_input_direction();
+
+void main_menu()
+{
+
+    while (true)
+    {
+        string user_input;
+        cout << ">--------------------------<" << endl;
+        cout << "|Welcome to Alien vs Zombie|" << endl;
+        cout << ">--------------------------<" << endl;
+        cout << "What would you like to do?" << endl;
+        cout << "1 - Play game" << endl;
+        cout << "2 - Settings" << endl;
+        cout << "3 - How to play" << endl;
+        cout << "4 - Exit" << endl;
+        cout << "-> ";
+        cin >> user_input;
+        BrdAZ board;
+        if (user_input == "1")
+        {
+            board.init(board.gmbrd_rows_, board.gmbrd_columns_);
+            
+            while(true)
+            {
+                board.display();
+                display_stats();
+                player_input_direction();
+                // clear_screen();
+            }
+        }
+        if (user_input == "2")
+        {
+            while (true)
+            {
+                cout << "Do you wish to change the game settings (y/n)? => ";
+                cin >> board.user_update_settings_yesno;
+                if (board.user_update_settings_yesno != "y" && board.user_update_settings_yesno != "n") // error check
+                {
+                    cout << " " << endl;
+                    cout << "Please use either y or n only." << endl;
+                    cout << " " << endl;
+                    continue;
+                }
+                else
+                    ;
+                settings_menu(board.user_update_settings_yesno, board.gmbrd_rows_, board.gmbrd_columns_, board.zombie_count);
+                break;
+            }
+            break;
+        }
+        if (user_input == "3")
+        {
+            break;
+        }
+        if (user_input == "4")
+        {
+            exit;
+            break;
+        }
+        else
+            cout << "\nPlease enter a digit of 1-4" << endl;
+        continue;
+    }
+}
+
+main()
+{
+    srand(1);  // use this for fixed map during testing
+    // define the variables for game settings
+    int gmbrd_rows;
+    int gmbrd_columns;
+    int zombie_count;
+    string user_update_settings_yesno;
+    string input;
+
+    // intialize class
+    BrdAZ board;
+
+    // DEFAULT GAME SETTINGS
+    board.gmbrd_rows_ = 3;
+    board.gmbrd_columns_ = 19;
+    board.zombie_count = 1;
+    input = "0";
+
+    main_menu();
+
 }
