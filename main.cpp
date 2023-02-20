@@ -199,7 +199,6 @@ void settings_menu(string user_update_settings_yesno, int &gmbrd_rows, int &gmbr
             {
                 cout << "Please use a postive number " << endl;
                 cin.clear();
-
                 continue;
             }
 
@@ -207,7 +206,6 @@ void settings_menu(string user_update_settings_yesno, int &gmbrd_rows, int &gmbr
             {
                 cout << "You can't use an even number. " << endl;
                 cin.clear();
-
                 continue;
             }
             else
@@ -224,7 +222,6 @@ void settings_menu(string user_update_settings_yesno, int &gmbrd_rows, int &gmbr
                 cout << "Please enter a number that does not contain alphabetical letters or special characters" << endl;
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
                 continue; // continue the loop
             }
 
@@ -232,7 +229,6 @@ void settings_menu(string user_update_settings_yesno, int &gmbrd_rows, int &gmbr
             {
                 cout << "Please enter a number starting from 5 and above for a playable grid!" << endl;
                 cin.clear();
-
                 continue;
             }
 
@@ -240,7 +236,6 @@ void settings_menu(string user_update_settings_yesno, int &gmbrd_rows, int &gmbr
             {
                 cout << "Please enter an odd number!" << endl;
                 cin.clear();
-
                 continue;
             }
             else
@@ -358,6 +353,21 @@ void player_input_direction()
     //display_stats();
     //player_input_direction();
 
+void manual()
+{
+    cout << "How to play" << endl;
+    cout << "-----------------------" << endl;
+    cout << "-You are the alien(A)" << endl;
+    cout << "-Defeat all the zombies(1,2,3,...) to win" << endl;
+    cout << "-Arrows(<,^,>,v) changes the aliens trajectory and increases its damage by 20" << endl;
+    cout << "-Grab healthpacks(h) to replenish 20 health" << endl;
+    cout << "-Pods(p) instantly deal 20 dmg to the nearest zombie when hit by alien" << endl;
+    cout << "-Rocks(r) are obstacles that may reveal other powerups when hit by alien" << endl;
+    cout << "-Use Up Down Left Right arrow keys to move" << endl;
+    cout << "-Hitting a zombie will deal the amount damage according to the aliens attack" << endl;
+    cout << "" << endl;
+}
+
 void main_menu()
 {
 
@@ -405,11 +415,12 @@ void main_menu()
                 settings_menu(board.user_update_settings_yesno, board.gmbrd_rows_, board.gmbrd_columns_, board.zombie_count);
                 break;
             }
-            break;
+            continue;
         }
         if (user_input == "3")
         {
-            break;
+            manual();
+            continue;
         }
         if (user_input == "4")
         {
